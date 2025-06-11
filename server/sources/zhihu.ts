@@ -4,18 +4,16 @@ import { proxyPicture } from "../utils/proxy"
 
 interface Res {
   data: {
-    target: {
-      id: number
-      title: string
-      url: string
-      created: number
-      answer_count: number
-      follower_count: number
-      bound_topic_ids: number[]
-      comment_count: number
-      is_following: boolean
-      excerpt: string
-    }
+    id: number
+    title: string
+    url: string
+    created: number
+    answer_count: number
+    follower_count: number
+    bound_topic_ids: number[]
+    comment_count: number
+    is_following: boolean
+    excerpt: string
     card_label?: {
       icon: string
       night_icon: string
@@ -25,7 +23,7 @@ interface Res {
 
 export default defineSource({
   zhihu: async () => {
-    const url = "https://www.zhihu.com/api/v3/feed/topstory/hot-lists/total?limit=20&desktop=true"
+    const url = "https://www.zhihu.com/api/v3/feed/topstory/recommend?limit=20&desktop=true"
     const res: Res = await myFetch(url, {
       headers: {
         "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1",
@@ -39,20 +37,20 @@ export default defineSource({
         "x-zse-96": "2.0_",
         "x-ab-param": "",
         "x-ab-pb": "",
-        "Referer": "https://www.zhihu.com/hot",
+        "Referer": "https://www.zhihu.com/",
         "Origin": "https://www.zhihu.com"
       }
     })
     return res.data
       .map((k) => {
-        const urlId = k.target.url?.match(/(\d+)$/)?.[1]
+        const urlId = k.url?.match(/(\d+)$/)?.[1]
         return {
-          id: k.target.id,
-          title: k.target.title,
+          id: k.id,
+          title: k.title,
           extra: {
             icon: k.card_label?.night_icon && proxyPicture(k.card_label.night_icon),
           },
-          url: `https://www.zhihu.com/question/${urlId || k.target.id}`,
+          url: `https://www.zhihu.com/question/${urlId || k.id}`,
         }
       })
   },
